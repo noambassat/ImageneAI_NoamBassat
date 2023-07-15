@@ -5,7 +5,7 @@ async function scrapeOncoKB() {
     const page = await browser.newPage();
 
     await page.goto(`https://www.oncokb.org/actionableGenes`);
-    await page.waitForTimeout(10000); // change it wait for upload
+    await page.waitForTimeout(10000);  // wait 10 secs
     const all_data = await page.evaluate(
         ()=> {
             const data = []
@@ -21,11 +21,12 @@ async function scrapeOncoKB() {
 
                 const pattern = /Exon 19 in-frame deletions and (\d+) other alterations/;
                 const matchResult = current_row.alteration.text.match(pattern);
-                if((data.length===0 || data[data.length-1].alteration.link !== current_row.alteration.link)
+                if((data.length === 0 || data[data.length-1].alteration.link !== current_row.alteration.link)
                     &&  !matchResult){
 
                     data.push(current_row)
                 }
+                //first loop (empty data), avoid duplicates & ignore 'pattern'
 
             })
             return data
@@ -43,15 +44,17 @@ async function scrapeOncoKB() {
             );
             const geneUrl = geneResponse.url()
             const gene = geneUrl.split('/').pop()
+            // Extract gene
             const variantResponse = await page.waitForResponse(
                 response =>
                     response.url().includes(`https://www.oncokb.org/api/v1/variants/lookup?hugoSymbol=${encodeURI(gene)}`) && response.status() === 200
             );
-            //
+            
             const variantUrl = variantResponse.url()
             const variantUrlSearchParams = new URLSearchParams(variantUrl.split('?').pop());
-            //url search params -> parsing into objects
+            // URLSearchParams -> parsing into objects
             const variant = variantUrlSearchParams.get('variant') ? decodeURI(variantUrlSearchParams.get('variant')) : null
+            // Extract variant
             combinedJson[alterationLink] = {gene, variant}
         }
         catch (error){
