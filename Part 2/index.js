@@ -6,6 +6,7 @@ async function scrapeOncoKB() {
 
     await page.goto(`https://www.oncokb.org/actionableGenes`);
     await page.waitForTimeout(10000);  // wait 10 secs
+
     const all_data = await page.evaluate(
         ()=> {
             const data = []
@@ -20,13 +21,14 @@ async function scrapeOncoKB() {
                 }
 
                 const pattern = /Exon 19 in-frame deletions and (\d+) other alterations/;
+                // in order to ignore this pattern of alteration text
                 const matchResult = current_row.alteration.text.match(pattern);
                 if((data.length === 0 || data[data.length-1].alteration.link !== current_row.alteration.link)
                     &&  !matchResult){
 
                     data.push(current_row)
-                }
-                //first loop (empty data), avoid duplicates & ignore 'pattern'
+                }//pushes: first argument of the data (empty data), avoid duplicates & ignore 'pattern'
+                // I chose to ignore the duplicates rows because they use the exact same links.
 
             })
             return data
@@ -56,6 +58,7 @@ async function scrapeOncoKB() {
             const variant = variantUrlSearchParams.get('variant') ? decodeURI(variantUrlSearchParams.get('variant')) : null
             // Extract variant
             combinedJson[alterationLink] = {gene, variant}
+
         }
         catch (error){
             console.log(error)
