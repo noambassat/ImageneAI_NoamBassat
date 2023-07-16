@@ -20,9 +20,12 @@ async function scrapeOncoKB() {
                     alteration:  {text: alterationATag.innerText, link: `https://www.oncokb.org${encodeURI(alterationATag.getAttribute('href'))}`},
                 }
 
-                const pattern = /Exon 19 in-frame deletions and (\d+) other alterations/;
-                // in order to ignore this pattern of alteration text
-                const matchResult = current_row.alteration.text.match(pattern);
+                // Ignore problematic patterns
+                const ignore_pattern = /Exon 19 in-frame deletions and (\d+) other alterations/;
+                const matchResult = current_row.alteration.text.match(ignore_pattern)
+                    || current_row.gene.text.match(/Other Biomarkers/);
+
+
                 if((data.length === 0 || data[data.length-1].alteration.link !== current_row.alteration.link)
                     &&  !matchResult){
 
@@ -41,6 +44,8 @@ async function scrapeOncoKB() {
             const alterationLink = data.alteration.link
             await page.goto(alterationLink)
             // await page.setDefaultTimeout(10000);// Default timeout for all Puppeteer operations on a page
+            // console.log(alterationLink)
+
             const geneResponse = await page.waitForResponse(
                 response =>
                     response.url().includes('https://www.oncokb.org/api/private/utils/numbers/gene/') && response.status() === 200
