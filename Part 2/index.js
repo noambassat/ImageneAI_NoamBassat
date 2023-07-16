@@ -7,14 +7,14 @@ const fs = require('fs');
 //save as json
 function saveDataAsJson(dict, fileName) {
     const jsonString = JSON.stringify(dict);
-    const filePath = `./${fileName}.json`;
+    const filePath = `Files/${fileName}.json`;
 
     fs.writeFile(filePath, jsonString, (err) => {
         if (err) {
-            console.error('Error writing Json file:', err);
+            console.error('Error writing Json:', err);
             return;
         }
-        console.log(`JSON file '${fileName}.json' has been successfully saved.`);
+        console.log(`JSON file '${fileName}.json' saved.`);
     });
 }
 
