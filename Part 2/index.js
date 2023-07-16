@@ -40,6 +40,8 @@ async function scrapeOncoKB() {
         try {
             const alterationLink = data.alteration.link
             await page.goto(alterationLink)
+            await page.setDefaultTimeout(10000);// Default timeout for all Puppeteer operations on a page
+
             const geneResponse = await page.waitForResponse(
                 response =>
                     response.url().includes('https://www.oncokb.org/api/private/utils/numbers/gene/') && response.status() === 200
@@ -61,6 +63,7 @@ async function scrapeOncoKB() {
 
         }
         catch (error){
+
             console.log(error)
         }
     }
