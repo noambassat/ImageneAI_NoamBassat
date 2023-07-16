@@ -5,7 +5,7 @@ const fs = require('fs');
 
 
 //save as json
-function saveDataAsJson(dict, fileName) {
+function saveAsJson(dict, fileName) {
     const jsonString = JSON.stringify(dict);
     const filePath = `Files/${fileName}.json`;
 
@@ -58,7 +58,7 @@ async function scrapeOncoKB() {
             return data
         })
     console.log(all_data)
-    saveDataAsJson(all_data, 'geneANDalteration');
+    saveAsJson(all_data, 'geneANDalteration');
     const combinedJson = {}
 
     for(const data of all_data) {
@@ -96,7 +96,7 @@ async function scrapeOncoKB() {
     console.log(combinedJson)
     await browser.close();
 
-    saveDataAsJson(combinedJson, 'combinedJson');
+    saveAsJson(combinedJson, 'combinedJson');
 
 }
 
