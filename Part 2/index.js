@@ -1,5 +1,26 @@
 const puppeteer = require('puppeteer');
 
+
+const fs = require('fs');
+
+
+//save as json
+function saveDataAsJson(dict, fileName) {
+    const jsonString = JSON.stringify(dict);
+    const filePath = `./${fileName}.json`;
+
+    fs.writeFile(filePath, jsonString, (err) => {
+        if (err) {
+            console.error('Error writing Json file:', err);
+            return;
+        }
+        console.log(`JSON file '${fileName}.json' has been successfully saved.`);
+    });
+}
+
+
+
+
 async function scrapeOncoKB() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -37,6 +58,7 @@ async function scrapeOncoKB() {
             return data
         })
     console.log(all_data)
+    saveDataAsJson(all_data, 'geneANDalteration');
     const combinedJson = {}
 
     for(const data of all_data) {
@@ -74,18 +96,7 @@ async function scrapeOncoKB() {
     console.log(combinedJson)
     await browser.close();
 
-
-    // save as Json file
-    const fs = require('fs');
-    const jsonString = JSON.stringify(combinedJson);
-    const filePath = './combinedJson.json';
-    fs.writeFile(filePath, jsonString, (err) => {
-        if (err) {
-            console.error('Error writing JSON file:', err);
-            return;
-        }
-        console.log('JSON file has been saved successfully.');
-    });
+    saveDataAsJson(combinedJson, 'combinedJson');
 
 }
 
