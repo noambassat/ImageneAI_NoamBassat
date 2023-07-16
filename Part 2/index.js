@@ -51,7 +51,7 @@ async function scrapeOncoKB() {
                 response =>
                     response.url().includes(`https://www.oncokb.org/api/v1/variants/lookup?hugoSymbol=${encodeURI(gene)}`) && response.status() === 200
             );
-            
+
             const variantUrl = variantResponse.url()
             const variantUrlSearchParams = new URLSearchParams(variantUrl.split('?').pop());
             // URLSearchParams -> parsing into objects
@@ -66,6 +66,20 @@ async function scrapeOncoKB() {
     }
     console.log(combinedJson)
     await browser.close();
+
+
+    // save as Json file
+    const fs = require('fs');
+    const jsonString = JSON.stringify(combinedJson);
+    const filePath = './combinedJson.json';
+    fs.writeFile(filePath, jsonString, (err) => {
+        if (err) {
+            console.error('Error writing JSON file:', err);
+            return;
+        }
+        console.log('JSON file has been saved successfully.');
+    });
+
 }
 
 scrapeOncoKB();
